@@ -847,6 +847,40 @@ class DocumentService
         });
     }
 
+    public function createBajaSummaryForBoleta(Boleta $boleta): DailySummary
+    {
+        return DB::transaction(function () use ($boleta) {
+            $summaryData = [
+                'company_id' => $boleta->company_id,
+                'branch_id' => $boleta->branch_id,
+                'fecha_resumen' => $boleta->fecha_emision->format('Y-m-d'),
+                'fecha_generacion' => now()->toDateString(),
+                'detalles' => [$this->buildSummaryDetalleFromBoleta($boleta, '3')],
+            ];
+
+            return $this->createDailySummary($summaryData);
+        });
+    }
+
+    private function buildSummaryDetalleFromBoleta(Boleta $boleta, string $estado): array
+    {
+        return [
+            'tipo_documento' => $boleta->tipo_documento,
+            'serie_numero' => $boleta->serie . '-' . $boleta->correlativo,
+            'estado' => $estado,
+            'cliente_tipo' => $boleta->client->tipo_documento ?? '1',
+            'cliente_numero' => $boleta->client->numero_documento ?? '00000000',
+            'total' => $boleta->mto_imp_venta,
+            'mto_oper_gravadas' => $boleta->mto_oper_gravadas,
+            'mto_oper_exoneradas' => $boleta->mto_oper_exoneradas,
+            'mto_oper_inafectas' => $boleta->mto_oper_inafectas,
+            'mto_oper_gratuitas' => $boleta->mto_oper_gratuitas,
+            'mto_igv' => $boleta->mto_igv,
+            'mto_isc' => $boleta->mto_isc ?? 0,
+            'mto_icbper' => $boleta->mto_icbper ?? 0,
+        ];
+    }
+
     protected function prepareSummaryData(DailySummary $summary): array
     {
         // Forzar fecha de generación como hoy para evitar problemas de zona horaria

@@ -162,6 +162,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         Route::get('/{id}', [BoletaController::class, 'show']);
         Route::post('/{id}/send-sunat', [BoletaController::class, 'sendToSunat']);
+        Route::post('/{id}/anular', [BoletaController::class, 'anular']);
         Route::get('/{id}/download-xml', [BoletaController::class, 'downloadXml']);
         Route::get('/{id}/download-cdr', [BoletaController::class, 'downloadCdr']);
         Route::get('/{id}/download-pdf', [BoletaController::class, 'downloadPdf']);

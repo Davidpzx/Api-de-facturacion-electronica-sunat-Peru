@@ -189,6 +189,40 @@ class BoletaController extends Controller
     }
 
     /**
+     * Anular boleta mediante comunicación de baja (resumen con estado 3)
+     */
+    public function anular(string $id): JsonResponse
+    {
+        try {
+            $boleta = Boleta::findOrFail($id);
+            $summary = $this->documentService->createBajaSummaryForBoleta($boleta);
+            $result = $this->documentService->sendDailySummaryToSunat($summary);
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'summary_id' => $result['document']->id,
+                        'ticket' => $result['ticket'],
+                        'estado_proceso' => $result['document']->estado_proceso,
+                        'estado_sunat' => $result['document']->estado_sunat,
+                        'boleta' => $boleta->numero_completo,
+                    ]
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar la baja a SUNAT',
+                'error' => $result['error']
+            ], 400);
+
+        } catch (Exception $e) {
+            return $this->errorResponse('Error al anular la boleta', $e);
+        }
+    }
+
+    /**
      * Crear resumen diario desde fecha
      */
     public function createDailySummaryFromDate(CreateDailySummaryRequest $request): JsonResponse
