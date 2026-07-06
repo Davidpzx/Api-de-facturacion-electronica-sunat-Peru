@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\BoletaController;
+use App\Http\Controllers\Api\CreditNoteController;
 use App\Http\Controllers\Api\PdfController;
 use App\Http\Controllers\Api\CompanyConfigController;
 use App\Http\Controllers\Api\CompanyController;
@@ -156,6 +157,18 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/{id}/download-cdr', [BoletaController::class, 'downloadCdr']);
         Route::get('/{id}/download-pdf', [BoletaController::class, 'downloadPdf']);
         Route::post('/{id}/generate-pdf', [BoletaController::class, 'generatePdf']);
+    });
+
+    // Notas de Crédito
+    Route::prefix('notas-credito')->group(function () {
+        Route::get('/', [CreditNoteController::class, 'index']);
+        Route::post('/', [CreditNoteController::class, 'store']);
+        Route::get('/{id}', [CreditNoteController::class, 'show']);
+        Route::post('/{id}/send-sunat', [CreditNoteController::class, 'sendToSunat']);
+        Route::get('/{id}/download-xml', [CreditNoteController::class, 'downloadXml']);
+        Route::get('/{id}/download-cdr', [CreditNoteController::class, 'downloadCdr']);
+        Route::get('/{id}/download-pdf', [CreditNoteController::class, 'downloadPdf']);
+        Route::post('/{id}/generate-pdf', [CreditNoteController::class, 'generatePdf']);
     });
 
     // ========================
