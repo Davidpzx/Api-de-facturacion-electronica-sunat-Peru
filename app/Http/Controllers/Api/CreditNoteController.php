@@ -127,15 +127,12 @@ class CreditNoteController extends Controller
         try {
             $creditNote = CreditNote::findOrFail($id);
 
-            if (!$this->fileService->fileExists($creditNote->xml_path)) {
+            $download = $this->fileService->downloadXml($creditNote);
+            if ($download === null) {
                 return $this->notFoundResponse('XML no encontrado');
             }
 
-            return $this->fileService->downloadFile(
-                $creditNote->xml_path,
-                $creditNote->numero_completo . '.xml',
-                ['Content-Type' => 'application/xml']
-            );
+            return $download;
 
         } catch (Exception $e) {
             return $this->errorResponse('Error al descargar XML', $e);
@@ -150,15 +147,12 @@ class CreditNoteController extends Controller
         try {
             $creditNote = CreditNote::findOrFail($id);
 
-            if (!$this->fileService->fileExists($creditNote->cdr_path)) {
+            $download = $this->fileService->downloadCdr($creditNote);
+            if ($download === null) {
                 return $this->notFoundResponse('CDR no encontrado');
             }
 
-            return $this->fileService->downloadFile(
-                $creditNote->cdr_path,
-                'R-' . $creditNote->numero_completo . '.zip',
-                ['Content-Type' => 'application/zip']
-            );
+            return $download;
 
         } catch (Exception $e) {
             return $this->errorResponse('Error al descargar CDR', $e);

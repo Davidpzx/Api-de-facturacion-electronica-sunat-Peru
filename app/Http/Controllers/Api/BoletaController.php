@@ -130,15 +130,12 @@ class BoletaController extends Controller
         try {
             $boleta = Boleta::findOrFail($id);
             
-            if (!$this->fileService->fileExists($boleta->xml_path)) {
+            $download = $this->fileService->downloadXml($boleta);
+            if ($download === null) {
                 return $this->notFoundResponse('XML no encontrado');
             }
 
-            return $this->fileService->downloadFile(
-                $boleta->xml_path,
-                $boleta->numero_completo . '.xml',
-                ['Content-Type' => 'application/xml']
-            );
+            return $download;
 
         } catch (Exception $e) {
             return $this->errorResponse('Error al descargar XML', $e);
@@ -153,15 +150,12 @@ class BoletaController extends Controller
         try {
             $boleta = Boleta::findOrFail($id);
             
-            if (!$this->fileService->fileExists($boleta->cdr_path)) {
+            $download = $this->fileService->downloadCdr($boleta);
+            if ($download === null) {
                 return $this->notFoundResponse('CDR no encontrado');
             }
 
-            return $this->fileService->downloadFile(
-                $boleta->cdr_path,
-                'R-' . $boleta->numero_completo . '.zip',
-                ['Content-Type' => 'application/zip']
-            );
+            return $download;
 
         } catch (Exception $e) {
             return $this->errorResponse('Error al descargar CDR', $e);
