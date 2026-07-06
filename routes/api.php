@@ -151,6 +151,15 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::prefix('boletas')->group(function () {
         Route::get('/', [BoletaController::class, 'index']);
         Route::post('/', [BoletaController::class, 'store']);
+
+        // Resumen diario (debe ir antes de /{id} para no ser capturado como comodín)
+        Route::prefix('summary')->group(function () {
+            Route::get('/pending', [BoletaController::class, 'getBoletsasPendingForSummary']);
+            Route::post('/create', [BoletaController::class, 'createDailySummaryFromDate']);
+            Route::post('/{summaryId}/send-sunat', [BoletaController::class, 'sendSummaryToSunat']);
+            Route::get('/{summaryId}/status', [BoletaController::class, 'checkSummaryStatus']);
+        });
+
         Route::get('/{id}', [BoletaController::class, 'show']);
         Route::post('/{id}/send-sunat', [BoletaController::class, 'sendToSunat']);
         Route::get('/{id}/download-xml', [BoletaController::class, 'downloadXml']);
