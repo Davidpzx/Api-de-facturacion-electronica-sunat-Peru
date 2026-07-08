@@ -3,7 +3,10 @@
 
 @php
     // Unificamos la carga de la imagen en Base64 para todos los formatos y evitar problemas de rutas con dompdf.
-    $logoPath = public_path('logo_factura.png');
+    // Cada emisor muestra su propio logo (logo_path); si no tiene, cae al logo compartido.
+    $logoPath = (!empty($company->logo_path) && file_exists(storage_path('app/public/' . $company->logo_path)))
+        ? storage_path('app/public/' . $company->logo_path)
+        : public_path('logo_factura.png');
 
 @endphp
 

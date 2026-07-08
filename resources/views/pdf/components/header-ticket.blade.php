@@ -2,7 +2,10 @@
 {{-- Props: $company, $document, $tipo_documento_nombre, $format --}}
 
 @php
-    $logoPath = public_path('logo_factura.png');
+    // Cada emisor muestra su propio logo (logo_path); si no tiene, cae al logo compartido.
+    $logoPath = (!empty($company->logo_path) && file_exists(storage_path('app/public/' . $company->logo_path)))
+        ? storage_path('app/public/' . $company->logo_path)
+        : public_path('logo_factura.png');
 @endphp
 
 <div class="header">
